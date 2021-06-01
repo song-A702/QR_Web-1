@@ -11,21 +11,27 @@
 
 <%
 
+	String User_ID = null;
+	if(session.getAttribute("User_ID") !=null){
+		User_ID = (String)session.getAttribute("User_ID");
+	}
+
 	String url = request.getParameter("url");
 	int nCheck = 1;
-	String savedFileName = "QRcode.png";
+	String savedFileName = "QRcode_" + User_ID + ".png";
+	//session.setAttribute("QR_name", savedFileName);
 	
 	if(url==null || url.equals("") || !url.startsWith("http")){
 		nCheck=0;
 	}
 	else{
-		File path = new File("C:\\QR_Code");
+		File path = new File(application.getRealPath("/") + "QR_Code");
 		if(!path.exists()) path.mkdir();
 		
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix qrCode = writer.encode(url, BarcodeFormat.QR_CODE, 200, 200);
 		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(qrCode);
-		ImageIO.write(qrImage, "PNG", new File(path + "\\" + savedFileName));
+		ImageIO.write(qrImage, "PNG", new File(path, savedFileName));
 		}
 
 	
@@ -41,15 +47,19 @@
 <body>
 <h1>QRcode 생성</h1>
 <%
+	File path = new File(application.getRealPath("/") + "QR_Code");
 	if(nCheck == 1){
-		out.println("QR코드가 C드라이브 'QR_Code' 폴더에 생성되었습니다. :-)<p/>");
+		out.println("QR코드가 생성되었습니다. :-)<p/>");
 	}
 	else{
 		out.print("잘못된 URL 입니다.<p/>");
+		
 	}
 
 %>
-
 <a href="QRCode.jsp">다시 생성</a>
+<%
+	
+%>
 </body>
 </html>
